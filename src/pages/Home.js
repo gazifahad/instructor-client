@@ -11,7 +11,9 @@ import Loading from './Loading/Loading';
 
 
 const Home = () => {
-    const searchRef=useRef();
+
+    const searchRef = useRef();
+
     const [errorMessage, setErrorMessage] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [pageCount, setPageCount] = useState(0);
@@ -20,8 +22,38 @@ const Home = () => {
 
     const [inputvalues, setInputValues] = useState([]);
     const [billingList, setBillingList] = useState([]);
-    // console.log(inputvalues);
-  
+
+    const [totalPaid, setTotalPaid] = useState('')
+    
+    const totalAmount=()=>{
+        const url='https://my-new-application252563.herokuapp.com/totalAmount'
+       fetch(url)
+       .then(res=>res.json())
+       .then(data=>setTotalPaid(data.totalAmount))
+    }
+    useEffect(() => {
+        totalAmount()
+    }, [])
+
+    // console.log(billingList[6].amount);
+    //     const paid=()=>{  for (var i = 0;i <= billingList.length; i++) {
+    //         var total = 0;
+
+    //       total  =total+ billingList[i].name;
+    //       console.log(total);
+    //     // // //    let total = (amount);
+    //     // // //    total=total++;
+    //     //     console.log(total);
+    //         // return total;
+    //     } 
+    // }
+
+
+
+    // paid();
+    // console.log(total);
+
+
 
     const [lgShow, setLgShow] = useState(false);
     const { register, handleSubmit } = useForm();
@@ -30,23 +62,26 @@ const Home = () => {
         setInputValues(data);
         setIsLoading(true);
 
-        const url = 'http://localhost:5000/api/add-billing';
+
+        const url = 'https://my-new-application252563.herokuapp.com/api/add-billing';
         fetch(url,
             {
                 method: "POST",
                 headers: {
-                    "content-type": "application/json"
+                    "content-type": "application/json",
+                    
                 },
                 body: JSON.stringify(data)
             })
             .then(res => res.json())
-            .then(data => console.log(data));
+            .then(data =>  totalAmount());
+           
 
     }
 
     useEffect(() => {
         setIsLoading(true);
-        fetch('http://localhost:5000/api/entityCount')
+        fetch('https://my-new-application252563.herokuapp.com/api/entityCount')
             .then(res => res.json())
             .then(data => {
                 const count = data.count;
@@ -54,34 +89,40 @@ const Home = () => {
                 setPageCount(pages);
             })
     }, [])
-    
-    const handleSearch=()=>{
-        const searchText=searchRef.current.value;
-        
-        const url2=`http://localhost:5000/tsearch?page=${page}&size=${pageSize}&search=${searchText}`;
+
+    const handleSearch = () => {
+        const searchText = searchRef.current.value;
+
+        const url2 = `https://my-new-application252563.herokuapp.com/tsearch?page=${page}&size=${pageSize}&search=${searchText}`;
         fetch(url2)
-        .then(res=>res.json())
-        .then(data=>setBillingList(data));
+            .then(res => res.json())
+            .then(data => console.log(data));
         console.log(searchText);
     }
 
     useEffect(() => {
 
 
-        const url1 = `http://localhost:5000/api/billing-list?page=${page}&size=${pageSize}`;
-         fetch (url1)
+        const url1 = `https://my-new-application252563.herokuapp.com/api/billing-list?page=${page}&size=${pageSize}`;
+        fetch(url1,{
+            method:"GET",
+            headers:{
+                authorization:`Bearer ${localStorage.getItem('accessToken')}`
+            }
+        })
             .then(res => res.json())
-            .then(data =>{
+            .then(data => {
                 setBillingList(data)
                 setIsLoading(false)
-                })
-                .catch(() => {
-                    setErrorMessage("Unable to fetch user list");
-                    setIsLoading(false);
-                 });
+            })
+            .catch(() => {
+                setErrorMessage("Unable to fetch user list");
+                setIsLoading(false);
+            });
 
 
-    }, [page, pageSize,inputvalues])
+    }, [page, pageSize, inputvalues]);
+
 
 
 
@@ -92,8 +133,8 @@ const Home = () => {
             <h2>home</h2>
             <nav className='w-100 bg-secondary d-flex justify-content-between'>
                 <h4>logo</h4>
-                <label htmlFor="paid">paid total:
-                    <input className='h-100' type="number" value={30} name="paid" readOnly id="" />
+                <label className='text-white' htmlFor="paid">paid total:
+                    <input className='h-100' type="number" value={totalPaid} name="paid" readOnly id="" />
                 </label>
 
             </nav>
@@ -124,9 +165,9 @@ const Home = () => {
                             <Modal.Body>
                                 <form onSubmit={handleSubmit(onSubmit)} disabled={isLoading}>
                                     <input placeholder='full name' {...register("name", { required: true, maxLength: 20 })} />
-                                    <input placeholder='Email' {...register("email", {required:true, pattern: /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/ })} />
-                                    <input placeholder='phone no.' type="number" maxLength="14" {...register("phone", {required:true, pattern: /^([01]|\+88)?\d{11}/ })} />
-                                    <input placeholder='bill amount' type="number" inputmode="numeric" {...register("amount", {required:true, min: 1, max: 1000000 })}  />
+                                    <input placeholder='Email' {...register("email", { required: true, pattern: /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/ })} />
+                                    <input placeholder='phone no.' type="number" maxLength="14" {...register("phone", { required: true, pattern: /^([01]|\+88)?\d{11}/ })} />
+                                    <input placeholder='bill amount' type="number" inputmode="numeric" {...register("amount", { required: true, min: 1, max: 1000000 })} />
                                     <input type="submit" />
                                 </form>
                             </Modal.Body>
@@ -138,9 +179,9 @@ const Home = () => {
 
             </section>
             <section className='main-area text-center mx-auto'>
-           
-            
-                    {errorMessage && <div className="error">{errorMessage}</div>}
+
+
+                {errorMessage && <div className="error">{errorMessage}</div>}
                 <h2>bils: {billingList.length}</h2>
                 <div className='table-header'>
                     <input className='text-center' type="text" name="id" value='billing id' readOnly id="" />
@@ -151,11 +192,11 @@ const Home = () => {
                     <input className='text-center ps-2' type="text" name="action" value='action' id="" readOnly />
                 </div>
                 {
-                    isLoading && <Loading inputvalues={inputvalues}></Loading> 
+                    isLoading && <Loading inputvalues={inputvalues}></Loading>
                 }
                 {
-                    
-                    billingList.map(bill => <Bill list={billingList} setList={setBillingList} key={bill._id} bill={bill}> </Bill>)
+
+                    billingList.map(bill => <Bill list={billingList} totalAmount={totalAmount} setList={setBillingList} key={bill._id} bill={bill}> </Bill>)
                 }
             </section>
             <section className='pagination d-flex justify-content-center mt-3' >

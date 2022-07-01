@@ -9,18 +9,21 @@ const Login = () => {
     const onSubmit =async user => {
         const inputEmail=user.Email;
         const inputPass=user.Password;
-       const url=`http://localhost:5000/api/login?email=${user.Email}`
+       const url=`https://my-new-application252563.herokuapp.com/api/login?email=${user.Email}&pass=${user.Password}`
+
+  
         await fetch(url)
         .then(res=>res.json())
         .then(data=>{
-            // console.log();
-            if(data[0].Email==inputEmail && data[0].password==inputPass ){
+         console.log(data.accessToken);
+            if(data.result[0].Email==inputEmail && data.result[0].password==inputPass ){
                 navigate('/');
+                localStorage.setItem('accessToken',data.accessToken);
              }
-             else if(data[0].Email!==inputEmail && data[0].password==inputPass){
+             else if(data.result[0].Email!==inputEmail && data.result[0].password==inputPass){
                console.log('invalid email');
              }
-             else if(data[0].Email==inputEmail && data[0].password!==inputPass){
+             else if(data.result[0].Email==inputEmail && data.result[0].password!==inputPass){
                console.log('invalid password');
              }
              else {

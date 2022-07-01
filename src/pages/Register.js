@@ -9,7 +9,7 @@ const Register = () => {
 
     const onSubmit = data => {
     // setUser(data);
-    const url='http://localhost:5000/api/registration';
+    const url='https://my-new-application252563.herokuapp.com/api/registration';
     fetch(url,
      {
         method:"POST",

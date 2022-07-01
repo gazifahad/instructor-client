@@ -3,7 +3,7 @@ import { Modal } from 'react-bootstrap';
 // import { Button } from 'react-bootstrap';
 import { useForm } from 'react-hook-form';
 
-const Bill = ({ bill, list, setList }) => {
+const Bill = ({ bill, list, setList,totalAmount }) => {
     const { _id, name, email, phone, amount } = bill;
     
     const [lgShow, setLgShow] = useState(false);
@@ -37,7 +37,7 @@ const Bill = ({ bill, list, setList }) => {
         console.log(updateduser);
         
         
-        fetch(`http://localhost:5000/api/update-billing/${id}`, {
+        fetch(`https://my-new-application252563.herokuapp.com/api/update-billing/${id}`, {
             method: 'PUT', // or 'PUT'
             headers: {
                 'Content-Type': 'application/json',
@@ -46,7 +46,7 @@ const Bill = ({ bill, list, setList }) => {
         })
             .then(response => response.json())
             .then(data => {
-                console.log('Success:', data);
+                totalAmount();
                 alert('user updated')
                 
             })
@@ -70,7 +70,7 @@ const Bill = ({ bill, list, setList }) => {
 
     useEffect(()=>{
         
-        const url=`http://localhost:5000/api/update-billing/${_id}`;
+        const url=`https://my-new-application252563.herokuapp.com/api/update-billing/${_id}`;
         fetch(url)
         .then(res=>res.json())
         .then(data=>setupdatedUser(data))
@@ -89,13 +89,13 @@ const Bill = ({ bill, list, setList }) => {
     // console.log(list);
     const handleDelete = (id) => {
         console.log(id);
-        const url = `http://localhost:5000/api/delete-billing/${id}`
+        const url = `https://my-new-application252563.herokuapp.com/api/delete-billing/${id}`
 
         fetch(url, {
             method: 'DELETE'
         })
             .then(res => res.json())
-            .then(data => console.log(data))
+            .then(data => totalAmount())
 
         const rest = list.filter(b => b._id !== id)
         setList(rest);
