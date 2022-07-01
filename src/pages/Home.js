@@ -148,7 +148,7 @@ const Home = () => {
                     <input className='text-center' type="email" name="email" value="email" readOnly id="" />
                     <input className='text-center' type="text" name="phone" value="Contact no." readOnly id="" />
                     <input className='text-center' type="text" name="amount" value='paid amount' readOnly id="" />
-                    <input className='text-center' type="text" name="action" value='action' id="" readOnly />
+                    <input className='text-center ps-2' type="text" name="action" value='action' id="" readOnly />
                 </div>
                 {
                     isLoading && <Loading inputvalues={inputvalues}></Loading> 
